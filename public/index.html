@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>週プレ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/normalize.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.7/css/swiper.min.css" />
+<link rel="stylesheet" href="css/swiper.css">
+<link rel="stylesheet" href="css/header.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+	<!-- Header Start -->
+	<header class="site-header">
+		<div class="wrapper site-header__wrapper">
+			<div class="site-header__start">
+				<a href="#" class="brand">Title</a>
+			</div>
+			<div class="site-header__end">
+				<nav class="nav">
+					<button class="nav__toggle" aria-expanded="false" type="button">menu</button>
+					<ul class="nav__wrapper">
+						<li class="nav__item"><a href="#">ホーム</a></li>
+						<li class="nav__item"><a href="#">ユーザー一覧</a></li>
+						<li class="nav__item"><a href="#">登録</a></li>
+						<li class="nav__item"><a href="#">このサイトについて</a></li>
+					</ul>
+				</nav>
+					<div class="search">
+						<button class="search__toggle" aria-label="Open search">Search</button>
+						<form class="search__form" action="">
+							<label class="sr-only" for="search">Search</label>
+							<input type="search" name="" id="search" placeholder="What's on your mind?"/>
+						</form>
+				</div>
+			</div>
+		</div>
+	</header>
+	<!-- Header End -->
+	<!-- swiper.js -->
+	<!-- スライダー全体を括るメインコンテナ -->
+	<div class="swiper-container">
+		<!-- 全スライドをまとめるラッパー -->
+		<div class="swiper-wrapper">
+			<!-- 各スライド -->
+			<div class="swiper-slide"><a href="#"><img src="img/image01.png" alt="img"></a></div>
+			<div class="swiper-slide"><img src="img/IMG_0204.jpg" alt="img"></div>
+		</div>
+
+		<!-- ページネーションを表示する場合 --><br>
+		<div class="swiper-pagination"></div>
+		<!-- 前後スライドへのナビゲーションボタン(矢印)を表示する場合 -->
+		<div class="swiper-button-prev"></div>
+		<div class="swiper-button-next"></div>
+
+		<!-- スクロールバーを表示する場合 -->
+		<div class="swiper-scrollbar"></div>
+	</div>
+	<!-- swiper.js -->
+	
+	<div class="content_main">
+		<section class="section">
+			<div class="section_area">
+				<p class="pop_title">参戦受付中！</p>
+				<div class="pop_wrap">
+					<!--<div class="pop_box">
+						<a href="#"><img src="img/IMG_0218.jpg" alt="icon">
+							<span class="popchara">
+								<p>Name:Kenshin</p>
+								<p>Genre:歌</p>
+								<p>Platform:YouTube</p>
+								<p>Comment:<br>頑張ります！</p>
+							</span>
+						</a>
+					</div>-->
+					<div id="msg"></div>
+				</div>
+			</div>
+		</section>
+		
+		<section class="section">
+			<div class="section_area">
+				<p class="new_title">新規参戦！</p>
+				<div class="new_wrap">
+					<div class="new_box">
+						<a href="#"><img src="img/IMG_0218.jpg" alt="icon"><p>name</p><p>ジャンル</p><p>プラットフォーム</p></a>
+					</div>
+					<div class="new_box">
+						<a href="#"><img src="img/IMG_0218.jpg" alt="icon"><p>name</p><p>ジャンル</p><p>プラットフォーム</p></a>
+					</div>
+					<div class="new_box">
+						<a href="#"><img src="img/IMG_0218.jpg" alt="icon"><p>name</p><p>ジャンル</p><p>プラットフォーム</p></a>
+					</div>
+					<div class="new_box">
+						<a href="#"><img src="img/IMG_0218.jpg" alt="icon"><p>name</p><p>ジャンル</p><p>プラットフォーム</p></a>
+					</div>
+					<div class="new_box">
+						<a href="#"><img src="img/IMG_0218.jpg" alt="icon"><p>name</p><p>ジャンル</p><p>プラットフォーム</p></a>
+					</div>
+					<div class="new_box">
+						<a href="#"><img src="img/IMG_0218.jpg" alt="icon"><p>name</p><p>ジャンル</p><p>プラットフォーム</p></a>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+	
+	<!-- JavaScript -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.7/js/swiper.min.js"></script>
+	<script src="js/swiper.js"></script>
+	<script src="js/header.js"></script>
+	
+	<script src="https://www.gstatic.com/firebasejs/5.8.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.8.1/firebase-firestore.js"></script>
+<script src="./js/config.js"></script>
+<script>
+	var db = firebase.firestore();
+    var LIST = [];  //ID保管用
+	db.collection("user").limit(4).get().then((querySnapshot) => {
+        var buff = [];
+        var html = "<div class='pop_wrap'>";
+        querySnapshot.forEach((doc) => {
+          var data = doc.data();
+          html += `<div class="pop_box">
+                    <img src="${data.icon}" alt="icon">
+                    <span class="popchara">
+                    <p>name:${data.name}</p> 
+                    <p><a href="${data.platformurl}">Platform:${data.platform}</a></p> 
+                    <a href="${data.snsurl}">SNS:${data.snsurl}</a>
+					<p>コメント:${data.comment}</p>
+                    </span>
+                    </div>`;
+          buff.push(doc.id);
+        });
+        html += "</ul>";
+        LIST = buff;
+        showMessage(html);
+      })
+      .catch((error)=>{
+        showMessage(`データの取得に失敗しました (${error})`);
+      });
+	  function showMessage(str){
+      var msg = document.querySelector("#msg");
+      msg.innerHTML = str;
+    }
+</script>
+</body>
+</html>

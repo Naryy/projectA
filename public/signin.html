@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <title>Firebase Authentication sample 04</title>
+  <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+  <link href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+  <h1>Firebase Authenction Sample 04</h1>
+  <div id="auth"></div>
+  <script src="/__/firebase/7.16.0/firebase-app.js"></script> 
+  <script src="/__/firebase/7.16.0/firebase-auth.js"></script> 
+  <script src="/__/firebase/7.16.0/firebase-firestore.js"></script>
+  <script src="/__/firebase/init.js"></script> 
+  <script type="text/javascript">
+
+  /*
+  Firebase Authentcation を使った認証サンプル 03
+  Google認証用のオブジェクトを生成
+  認証用の関数「signIn」を定義
+  サインアウト 用の関数「signOut」を定義
+  認証の状態をチェックして、「サインイン」「サインアウト 」のボタンを出し分ける
+  */
+
+  const provider = new firebase.auth.GoogleAuthProvider();
+  var db = firebase.firestore();
+  function signIn() {
+  firebase.auth().signInWithPopup(provider)
+  .then(result => {
+      console.log('ログインしました。');
+
+  }).catch(error => {
+        const signinError = `
+        サインインエラー
+        エラーメッセージ： ${error.message}
+        エラーコード: ${error.code}
+        `
+  　　　console.log(signinError);
+  });
+  }
+
+  function signOut() {
+  firebase.auth().onAuthStateChanged(user => {
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        console.log('ログアウトしました');
+        location.reload();
+      })
+      .catch((error) => {
+        console.log(`ログアウト時にエラーが発生しました (${error})`);
+      });
+  });
+  }
+
+  firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+        const signOutMessage = `
+		<p>${user.displayName}!<\/p>
+		<p>${user.email}!<\/p>
+		<p>${user.photoURL}!<\/p>
+		<p>${user.emailVerified}!<\/p>
+		<p>${user.uid}!<\/p>
+		<a href="./hoge.html">hogehoge</a>
+        <button class="btn btn-primary" type="submit"  onClick="signOut()">サインアウト<\/button>
+        `;
+        document.getElementById('auth').innerHTML =  signOutMessage;
+        console.log('ログインしています');
+		console.log(user.uid)
+		
+		
+		firebase.firestore.Timestamp.now()
+		db.collection("user").doc(user.uid).set({
+			name: user.displayName,
+			icon: user.photoURL,
+			mail: user.email,
+    		time: firebase.firestore.Timestamp.now()
+		})
+		.then(function() {
+    		console.log("Document successfully written!");
+		})
+		.catch(function(error) {
+    		console.error("Error writing document: ", error);
+		});
+    } else {
+          const signInMessage = `
+          <button class="btn btn-primary" type="submit"  onClick="signIn()">サインイン<\/button>
+          `;
+          document.getElementById('auth').innerHTML = signInMessage;       
+    }
+  });
+  </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <title>updatefirestore</title>
+  <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+  <link href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+  <h1>regist</h1>
+  <div id="auth"></div>
+	<form action="#" method="post">
+		<p>活動しているプラットフォームを入力してください(例:YouTube)</p>
+		<input type="text" id="platform" value="">
+		<p>URL(例:https://www.youtube.com/channel/xxxxxx)</p>
+		<input type="text" id="platformurl" value="">
+		<p>SNSアカウントがある場合はURLを入力してください。(例:https://www.instagram.com/xxxx)</p>
+		<input type="text" id="snsurl" value="">
+		<input type="button" onClick="updateuser()" value="送信">
+	</form>
+  <script src="/__/firebase/7.16.0/firebase-app.js"></script> 
+  <script src="/__/firebase/7.16.0/firebase-auth.js"></script> 
+  <script src="/__/firebase/7.16.0/firebase-firestore.js"></script>
+  <script src="/__/firebase/init.js"></script> 
+  <script type="text/javascript">
+
+  const provider = new firebase.auth.GoogleAuthProvider();
+  var db = firebase.firestore();
+  
+  firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+        const signOutMessage = `
+		<p>${user.displayName}!<\/p>
+		<p>${user.email}!<\/p>
+		<p>${user.photoURL}!<\/p>
+		<p>${user.emailVerified}!<\/p>
+		<p>${user.uid}!<\/p>
+		<a href="./hoge.html">hogehoge</a>
+        `;
+        document.getElementById('auth').innerHTML =  signOutMessage;
+        console.log('ログインしています');
+		console.log(user.uid)
+		
+    }
+  });
+	  function updateuser() {
+		  firebase.auth().onAuthStateChanged(user => {
+			  var input_platform = document.getElementById("platform").value;
+			  var input_platformurl = document.getElementById("platformurl").value;
+			  var input_sns = document.getElementById("snsurl").value;
+			  firebase.firestore.Timestamp.now()
+			  db.collection("post").update({
+				  platform: input_platform,
+				  platformurl: input_platformurl,
+				  snsurl: input_sns,
+				  name : user.displayname,
+				  
+			  })
+				  .then(function() {
+				  console.log("Document successfully written!");
+			  })
+				  .catch(function(error) {
+				  console.error("Error writing document: ", error);
+			  });
+		  });
+		
+	  };
+  </script>
+</body>
+</html>
